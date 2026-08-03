@@ -28,8 +28,6 @@ always_comb begin
     exponent_b = b[30:23];
     significand_b = {1'b1, b[22:0]};
 
-   
-
     //make exponents equal
     if(exponent_b < exponent_a) begin
         diff = exponent_a - exponent_b;
@@ -77,4 +75,3 @@ always_comb begin
     c[22:0] = significand_c[22:0];
 end
 endmodule
-
