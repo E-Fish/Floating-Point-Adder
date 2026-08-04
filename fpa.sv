@@ -23,16 +23,30 @@ logic [EXP-1:0] diff;
 integer i;
 
 always_comb begin
+
+    
     sign_a = a[EXP+MANT];
     exponent_a = a[EXP+MANT-1:MANT];
-    mantissa_a = {1'b1, a[MANT-1:0]};
+    
 
     sign_b = b[EXP+MANT];
     exponent_b = b[EXP+MANT-1:MANT];
-    mantissa_b = {1'b1, b[MANT-1:0]};
 
+    if(exponent_a == '0)begin
+        mantissa_a = a[MANT-1:0];
+        mantissa_b = {1'b1, b[MANT-1:0]};
+    end
+    else if
+    (exponent_b == '0) begin
+        mantissa_a = {1'b1, a[MANT-1:0]};
+        mantissa_b = b[MANT-1:0];
+    end
+    else begin
+        mantissa_a = {1'b1, a[MANT-1:0]};
+        mantissa_b = {1'b1, b[MANT-1:0]};
+    end
    
-
+    
     //make exponents equal
     if(exponent_b < exponent_a) begin
         diff = exponent_a - exponent_b;
@@ -61,22 +75,30 @@ always_comb begin
     end
     exponent_c = exponent_a;
 
-    //account for offsets
-    if(mantissa_c[MANT+1]) begin
-        mantissa_c = mantissa_c >> 1;
-        exponent_c = exponent_c + 1;
-    end else begin
+    if(mantissa_c == '0)begin
+        mantissa_c = '0;
+        exponent_c = '0;
+        c[EXP+MANT] = 1'b0;
+    end
+    else begin
+        //account for offsets
+        if(mantissa_c[MANT+1]) begin
+            mantissa_c = mantissa_c >> 1;
+            exponent_c = exponent_c + 1;
+        end else begin
 
-        //change this to a chain of if/else ?
-        for(i = 0; i < MANT; i = i + 1)begin
-            if(mantissa_c[MANT] == 0)begin
-                mantissa_c = mantissa_c << 1;
-                exponent_c = exponent_c - 1;
+            //truncation
+            for(i = 0; i < MANT; i = i + 1)begin
+                if(mantissa_c[MANT] == 0)begin
+                    mantissa_c = mantissa_c << 1;
+                    exponent_c = exponent_c - 1;
+                end
             end
         end
     end
     c[EXP+MANT-1:MANT] = exponent_c;
     c[MANT-1:0] = mantissa_c[MANT-1:0];
+    
 end
 
 endmodule
