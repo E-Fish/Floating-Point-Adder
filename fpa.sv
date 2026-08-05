@@ -1,6 +1,6 @@
 module fpa #(
-parameter EXP = 8,
-parameter MANT = 23
+parameter EXP = 5, // FP32: 8; FP16: 5; BF16: 8
+parameter MANT = 10 // FP32: 23; FP16: 10; BF16: 7
 )(
     input logic [EXP+MANT:0] a,
     input logic [EXP+MANT:0] b,
@@ -23,11 +23,9 @@ logic [EXP-1:0] diff;
 integer i;
 
 always_comb begin
-
     
     sign_a = a[EXP+MANT];
     exponent_a = a[EXP+MANT-1:MANT];
-    
 
     sign_b = b[EXP+MANT];
     exponent_b = b[EXP+MANT-1:MANT];
@@ -46,7 +44,6 @@ always_comb begin
         mantissa_b = {1'b1, b[MANT-1:0]};
     end
    
-    
     //make exponents equal
     if(exponent_b < exponent_a) begin
         diff = exponent_a - exponent_b;

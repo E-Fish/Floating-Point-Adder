@@ -1,20 +1,27 @@
 IVERILOG = iverilog
 FLAGS = -Wall -g2012
+
 FPA = fpa.sv
-FPATB = fpa_tb.sv
-OUT = output
 
-#Compiles output and runs
-all: $(OUT)
-	./$(OUT)
+FP16ATB = tb_fp16a.sv
+BF16ATB = tb_bf16.sv
+FP32ATB = tb_fp32.sv
 
-$(OUT): $(FPA) $(FPATB)
-	$(IVERILOG) $(FLAGS) -o $(OUT) $(FPA) $(FPATB)
+OUT_FP16 = output_fp16
+OUT_BF16 = output_bf16
+OUT_FP32 = output_fp32
 
-#Just run w/o compile
-run:
-	./$(OUT)
+# To test all three data types we made
+all: $(OUT_FP16) $(OUT_BF16) $(OUT_FP32)
+	./$(OUT_FP16)
+	./$(OUT_BF16)
+	./$(OUT_FP32)
 
-#To delete output when done, if you wanna
-clean:
-	rm -f $(OUT)
+$(OUT_FP16): $(FPA) $(FP16ATB)
+	$(IVERILOG) $(FLAGS) -o $(OUT_FP16) $(FPA) $(FP16ATB)
+
+$(OUT_BF16): $(FPA) $(BF16ATB)
+	$(IVERILOG) $(FLAGS) -o $(OUT_BF16) $(FPA) $(BF16ATB)
+
+$(OUT_FP32): $(FPA) $(FP32ATB)
+	$(IVERILOG) $(FLAGS) -o $(OUT_FP32) $(FPA) $(FP32ATB)
