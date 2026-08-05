@@ -1,4 +1,6 @@
-module fpa #(
+module fpa_pipe #(
+
+// TODO: pipeline and switch to rounding rather than truncating
 
 parameter EXP = 5, // FP32: 8; FP16: 5; BF16: 8
 parameter MANT = 10 // FP32: 23; FP16: 10; BF16: 7
