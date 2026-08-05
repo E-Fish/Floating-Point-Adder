@@ -2,30 +2,46 @@
 
 //`include "fpa.sv"
 
-module tb_fp6a;
+module tb_fp16a;
 
     localparam int EXPONENT = 5;
     localparam int MANTISSA = 10;
     localparam int TOTAL = MANTISSA + EXPONENT;
 
+    logic clk;
     logic [TOTAL:0] a;
     logic [TOTAL:0] b;
     logic [TOTAL:0] c;
 
-    fpa#(
+    fpa_pipe #(
         .MANT(MANTISSA),
         .EXP(EXPONENT)
     )  fpa (
+        .clk(clk),
         .a(a),
         .b(b),
         .c(c)
     );
 
+    initial clk = 0;
+    always #5 clk = ~clk;
+
     task run_test(logic [TOTAL:0] test_a, logic [TOTAL:0] test_b, logic [TOTAL:0] expected);
         begin
             a = test_a;
             b = test_b;
-            #5; // quick wait for logic to settle
+            
+            // Note to self: repeat as many always_ff are in pipeline
+            @(posedge clk);
+            #1;
+            @(posedge clk);
+            #1;
+            @(posedge clk);
+            #1;
+            @(posedge clk);
+            #1;
+            @(posedge clk);
+            #1;
  
             if (c === expected) begin
                 $display("a=%016b b=%016b out=%016b PASS", test_a, test_b, c);
@@ -38,11 +54,12 @@ module tb_fp6a;
 
     initial begin
         $dumpfile("waveform.vcd");
-        $dumpvars(0, tb_fp6a);
+        $dumpvars(0, tb_fp16a);
 
         a = 0; 
         b = 0;
-        #5;
+        @(posedge clk); // Wait for clk edge
+        #1; // Add small delay
 
         //Zero + zero
         run_test(16'b0000000000000000, 16'b0000000000000000, 16'b0000000000000000);

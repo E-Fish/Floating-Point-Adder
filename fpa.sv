@@ -95,6 +95,7 @@ always_comb begin
             end
         end
     end
+    
     c[EXP+MANT-1:MANT] = exponent_c;
     c[MANT-1:0] = mantissa_c[MANT-1:0];
     

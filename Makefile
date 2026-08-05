@@ -1,7 +1,7 @@
 IVERILOG = iverilog
 FLAGS = -Wall -g2012
 
-FPA = fpa.sv
+FPA = fpa_pipe.sv
 
 FP16ATB = tb_fp16a.sv
 BF16ATB = tb_bf16.sv
