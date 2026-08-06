@@ -1,5 +1,5 @@
-#! /home/elf83/miniconda3/bin/vvp
-:ivl_version "11.0 (stable)";
+#! /opt/homebrew/Cellar/icarus-verilog/13.0/bin/vvp
+:ivl_version "13.0 (stable)" "(v13_0)";
 :ivl_delay_selection "TYPICAL";
 :vpi_time_precision + 0;
 :vpi_module "/home/elf83/miniconda3/lib/ivl/system.vpi";
@@ -381,10 +381,12 @@ T_1.19 ;
     %vpi_call/w 3 131 "$finish" {0 0 0};
     %end;
     .thread T_1;
+    .thread T_1;
 # The file index is used to find the file name in the following table.
 :file_names 5;
     "N/A";
     "<interactive>";
     "-";
+    "tb_fp32.sv";
     "tb_fp32.sv";
     "fpa.sv";

@@ -1,8 +1,6 @@
 module fpa #(
-
-parameter EXP = 5, // FP32: 8; FP16: 5; BF16: 8
-parameter MANT = 10 // FP32: 23; FP16: 10; BF16: 7
-
+parameter EXP = 8,
+parameter MANT = 23
 )(
     input logic [EXP+MANT:0] a,
     input logic [EXP+MANT:0] b,
@@ -18,16 +16,21 @@ logic [EXP-1:0] exponent_b;
 logic [MANT:0] mantissa_b;
 
 logic [EXP-1:0] exponent_c;
-logic [MANT+1:0] mantissa_c;
+logic [MANT+3:0] mantissa_c;
 
 logic [EXP-1:0] diff;
+
+// logic guard_a, sticky_a, round_a;
+// logic guard_b, sticky_b, round_b;
 
 integer i;
 
 always_comb begin
+
     
     sign_a = a[EXP+MANT];
     exponent_a = a[EXP+MANT-1:MANT];
+    
 
     sign_b = b[EXP+MANT];
     exponent_b = b[EXP+MANT-1:MANT];
@@ -46,15 +49,26 @@ always_comb begin
         mantissa_b = {1'b1, b[MANT-1:0]};
     end
    
+    
     //make exponents equal
     if(exponent_b < exponent_a) begin
         diff = exponent_a - exponent_b;
-        mantissa_b = mantissa_b >> diff;
+
+        for(int i = 0; i <= (diff - 3); i++) begin
+            mantissa_b[diff - 3] |= mantissa_b[i];
+        end
+
+        mantissa_b = mantissa_b >> (diff - 3);
         exponent_b = exponent_a;
     end
     else begin
         diff = exponent_b - exponent_a;
-        mantissa_a = mantissa_a >> diff;
+
+        for(int i = 0; i <= (diff - 3); i++) begin
+            mantissa_a[diff - 3] |= mantissa_a[i];
+        end
+
+        mantissa_a = mantissa_a >> (diff - 3);
         exponent_a = exponent_b;
     end
 
@@ -86,7 +100,7 @@ always_comb begin
             exponent_c = exponent_c + 1;
         end else begin
 
-            //truncation
+            //normalization
             for(i = 0; i < MANT; i = i + 1)begin
                 if(mantissa_c[MANT] == 0)begin
                     mantissa_c = mantissa_c << 1;
@@ -95,7 +109,6 @@ always_comb begin
             end
         end
     end
-    
     c[EXP+MANT-1:MANT] = exponent_c;
     c[MANT-1:0] = mantissa_c[MANT-1:0];
     
