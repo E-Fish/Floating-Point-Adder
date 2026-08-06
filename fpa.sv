@@ -1,3 +1,7 @@
+
+//floating point adder that rounds by truncating
+
+
 module fpa #(
 parameter EXP = 8,
 parameter MANT = 23
@@ -19,9 +23,6 @@ logic [EXP-1:0] exponent_c;
 logic [MANT+3:0] mantissa_c;
 
 logic [EXP-1:0] diff;
-
-// logic guard_a, sticky_a, round_a;
-// logic guard_b, sticky_b, round_b;
 
 integer i;
 
@@ -53,22 +54,12 @@ always_comb begin
     //make exponents equal
     if(exponent_b < exponent_a) begin
         diff = exponent_a - exponent_b;
-
-        for(int i = 0; i <= (diff - 3); i++) begin
-            mantissa_b[diff - 3] |= mantissa_b[i];
-        end
-
-        mantissa_b = mantissa_b >> (diff - 3);
+        mantissa_b = mantissa_b >> diff;
         exponent_b = exponent_a;
     end
     else begin
         diff = exponent_b - exponent_a;
-
-        for(int i = 0; i <= (diff - 3); i++) begin
-            mantissa_a[diff - 3] |= mantissa_a[i];
-        end
-
-        mantissa_a = mantissa_a >> (diff - 3);
+        mantissa_a = mantissa_a >> diff;
         exponent_a = exponent_b;
     end
 
